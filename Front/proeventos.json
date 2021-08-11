@@ -1,0 +1,33 @@
+{
+  "local": "Rio de Janeiro",
+  "dataEvento": "2021-08-07T20:36:59.133Z",
+  "tema": "Angular com .NET",
+  "qtdPessoas": 31,
+  "imagemURL": "foto1.jpg",
+  "telefone": "(21)9999-9999",
+  "email": "evento@angular.com",
+  "lotes": [
+    {
+      "nome": "2",
+      "preco": 50,
+      "dataInicio": "2021-08-07T20:36:59.133Z",
+      "dataFim": "2021-08-07T20:36:59.133Z",
+      "quantidade": 100
+    }
+  ],
+  "redesSociais": [
+    {
+      "nome": "Facebook",
+      "url": "teste",
+      "palestrante": {
+        "nome": "Hugo",
+        "miniCurriculo": "formado",
+        "imagemURL": "teste",
+        "telefone": "21-23232323",
+        "email": "hugopes@angular.com",
+        "redesSociais": [],
+        "palestranteEventos": []
+      }
+    }
+  ]
+}

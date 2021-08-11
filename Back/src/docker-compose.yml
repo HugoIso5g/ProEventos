@@ -1,0 +1,12 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+
+version: '3.4'
+
+services:
+  proeventosapi:
+    image: proeventosapi
+    build:
+      context: .
+      dockerfile: Back/src/ProEventos.API/Dockerfile
+    ports:
+      - 5000:5000
