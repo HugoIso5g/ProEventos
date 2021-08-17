@@ -2,5 +2,6 @@
     "cSpell.words": [
         "Imagem",
         "mostrar"
-    ]
+    ],
+    "angular.enable-strict-mode-prompt": false
 }

@@ -56,7 +56,7 @@
     <td class="d-none d-md-table-cell">
       <img [collapse]="!mostrarImagem"
       [isAnimated]="true"
-       src="assets/{{evento.imagemURL}}"
+       [src]="mostrarImagemUrl(evento.imagemURL)"
        alt="{{ evento.imagemURL }}"
         [style.width.px]="larguraImagem"
         [style.margin.px]="margemImagem"
@@ -67,12 +67,10 @@
       <td class="d-none d-md-table-cell">{{ evento.local }}</td>
       <td>{{ evento.dataEvento}}</td>
       <td class="d-none d-md-table-cell">{{ evento.qtdPessoas }}</td>
-      <td class="d-none d-md-table-cell">{{ evento.lotes[0].nome}}</td>
+      <td class="d-none d-md-table-cell">{{ evento.lotes[0]?.nome | uppercase}}</td>
       <td>
-
-
         <button class="btn btn-danger btn-lg" tooltip="Excluir"
-        (click)="openModal(template)"
+        (click)="openModal($event ,template,evento.id)"
         >
           <i class="fa fa-trash"></i></button>
       </td>
@@ -89,7 +87,7 @@
 </div>
 <ng-template #template>
 <div class="modal-body text-center">
-  <p>Tem certeza que deseja deletar este evento?</p>
+  <p>Tem certeza que deseja deletar este evento de código {{ this.eventoId }}?</p>
   <button type="button" class="btn btn-default" (click)="confirm()" >Sim</button>
   <button type="button" class="btn btn-primary" (click)="decline()" >Não</button>
 </div>

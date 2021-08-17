@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  apiUrlImage : 'https://localhost:5001/resources/images/'
 };

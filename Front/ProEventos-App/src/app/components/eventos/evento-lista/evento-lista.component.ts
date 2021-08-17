@@ -1,3 +1,4 @@
+import { environment } from '@environments/environment';
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
@@ -16,6 +17,7 @@ export class EventoListaComponent implements OnInit {
   modalRef!: BsModalRef;
   public eventos : Evento[] = [];
   public eventosFiltrados :  Evento[]  = [];
+  public eventoId : number = 0;
 
   public larguraImagem : number = 150;
   public margemImagem : number = 2;
@@ -74,13 +76,29 @@ export class EventoListaComponent implements OnInit {
     });
   }
 
-  openModal(template: TemplateRef<any>) : void {
+  openModal(event : any ,template: TemplateRef<any>,eventoId : number) : void {
+    event.stopPropagation();
+    this.eventoId = eventoId;
     this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
   }
 
   confirm(): void {
-    this.toastr.success('Success','Evento foi deletado com sucesso!')
     this.modalRef.hide();
+    this.spinner.show();
+
+    console.log(this.eventoId);
+
+    this.eventoService.deleteEvento(this.eventoId).subscribe(
+      (result : any) => {
+          console.log('result ' + result);
+          this.toastr.success('O evento foi deletado com sucesso.','Deletado');
+          this.getEventos();
+      },
+      (error : any) => {
+        console.log(error);
+        this.toastr.error(`Erro ao tentar deletar o evento ${this.eventoId}`);
+      },
+    ).add(() => this.spinner.hide());
   }
 
   decline(): void {
@@ -89,6 +107,12 @@ export class EventoListaComponent implements OnInit {
 
   detalheEvento(id:number) : void{
     this.router.navigate([`eventos/detalhe/${id}`]);
+  }
+
+  mostrarImagemUrl(imagemUrl: string):string{
+    return (imagemUrl !== '')
+      ?  environment.apiUrlImage+imagemUrl
+      : 'assets/semImagem.png';
   }
 
 
