@@ -11,8 +11,32 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PalestrantesComponent } from './components/palestrantes/palestrantes.component';
 import { PerfilComponent } from './components/user/perfil/perfil.component';
 import { ContatoComponent } from './components/contato/contato.component';
+import { AuthGuard } from './guard/auth.guard';
+import { HomeComponent } from './components/home/home.component';
 
 const routes: Routes = [
+  {path:'',redirectTo:'home',pathMatch:'full'},
+  {
+    path: '',
+    runGuardsAndResolvers:'always',
+    canActivate: [AuthGuard],
+    children:[
+      {path: 'user/perfil' , component: PerfilComponent},
+      {path:'eventos' , redirectTo:'eventos/lista'},
+      {
+        path: 'eventos' , component: EventosComponent,
+        children:[
+          {path:'detalhe/:id' , component : EventoDetalheComponent},
+          {path:'detalhe' , component : EventoDetalheComponent},
+          {path:'lista' , component : EventoListaComponent},
+        ]
+      },
+      {path: 'dashboard' , component: DashboardComponent},
+      {path: 'palestrantes' , component: PalestrantesComponent},
+      {path: 'contatos' , component: ContatoComponent},
+    ]
+  },
+  {path:'eventos' , redirectTo:'user/perfil'},
   {
     path:'user' , component:UserComponent,
       children:[
@@ -20,26 +44,7 @@ const routes: Routes = [
         {path:'registration' , component:RegistrationComponent},
       ]
   },
-  {
-    path: 'user/perfil' , component: PerfilComponent
-  },
-  {
-    path:'eventos' , redirectTo:'eventos/lista'
-  },
-  {
-    path: 'eventos' , component: EventosComponent,
-    children:[
-      {path:'detalhe/:id' , component : EventoDetalheComponent},
-      {path:'detalhe' , component : EventoDetalheComponent},
-      {path:'lista' , component : EventoListaComponent},
-    ]
-
-  },
-  {path: 'dashboard' , component: DashboardComponent},
-  {path: 'palestrantes' , component: PalestrantesComponent},
-  {path: 'contatos' , component: ContatoComponent},
-
-  {path:'',redirectTo:'dashboard',pathMatch:'full'},
+  {path:'home',component: HomeComponent},
   {path:'**',redirectTo:'dashboard',pathMatch:'full'},
 
 ];

@@ -1,3 +1,4 @@
+import { Pagination, PaginatedResult } from './../../../models/Pagination';
 import { environment } from '@environments/environment';
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
@@ -6,6 +7,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Evento } from 'src/app/models/Evento';
 import { EventoService } from 'src/app/services/evento.service';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-evento-lista',
@@ -16,32 +19,42 @@ export class EventoListaComponent implements OnInit {
 
   modalRef!: BsModalRef;
   public eventos : Evento[] = [];
-  public eventosFiltrados :  Evento[]  = [];
   public eventoId : number = 0;
+  public pagination = {} as Pagination;
 
   public larguraImagem : number = 150;
   public margemImagem : number = 2;
   public mostrarImagem :boolean = true;
 
-  private _filtroLista : string = "";
+  termoBuscaChanged: Subject<string> = new Subject<string>();
 
-  public get filtroLista(){
-    return this._filtroLista;
-  }
-
-  public set filtroLista(value:string){
-    this._filtroLista = value;
-    this.eventosFiltrados = this.filtroLista ? this.filtrarEventos(this.filtroLista) : this.eventos;
-  }
-
-  public filtrarEventos(filtrarPor: string ) :  Evento[]
+  public filtrarEventos(evento: any ) :  void
   {
-    filtrarPor = filtrarPor.toLocaleLowerCase();
-    return this.eventos.filter(
-      (evento:{ tema: string;local:string }) =>
-        evento.tema.toLocaleLowerCase().indexOf(filtrarPor) !== -1 ||
-        evento.local.toLocaleLowerCase().indexOf(filtrarPor) !== -1
-    );
+    if(this.termoBuscaChanged.observers.length === 0)
+    {
+      this.termoBuscaChanged.pipe(debounceTime(1500)).subscribe(
+        filtrarPor => {
+          this.spinner.show();
+          this.eventoService.getEventos(
+            this.pagination.currentPage,
+            this.pagination.itemsPerPage,
+            filtrarPor
+            ).subscribe(
+              (response : PaginatedResult<Evento[]>) =>{
+                this.eventos = response.result;
+                this.pagination = response.pagination;
+              },
+              (error : any) =>{
+                this.spinner.hide();
+                this.toastr.error('Erro ao carregar os eventos')
+              }
+            )
+            .add(() => this.spinner.hide());
+            }
+          )
+    }
+
+    this.termoBuscaChanged.next(evento.value);
   }
 
   constructor(
@@ -53,7 +66,12 @@ export class EventoListaComponent implements OnInit {
     ) {}
 
   public ngOnInit(): void {
-    this.spinner.show();
+    this.pagination = {
+      currentPage : 1,
+      itemsPerPage : 3,
+      totalItems: 1,
+    } as Pagination;
+
     this.getEventos();
   }
 
@@ -62,18 +80,18 @@ export class EventoListaComponent implements OnInit {
   }
 
   public getEventos() : void {
-
-    this.eventoService.getEventos().subscribe({
-      next: (eventos : Evento[]) =>{
-        this.eventos = eventos;
-        this.eventosFiltrados = this.eventos;
+    this.spinner.show();
+    this.eventoService.getEventos(this.pagination.currentPage,this.pagination.itemsPerPage).subscribe(
+      (response : PaginatedResult<Evento[]>) =>{
+        console.log(response);
+        this.eventos = response.result;
+        this.pagination = response.pagination;
       },
-      error: (error : any) =>{
+      (error : any) =>{
         this.spinner.hide();
         this.toastr.error('Erro ao carregar os eventos')
-      },
-       complete: () => this.spinner.hide()
-    });
+      }
+    ).add(() => this.spinner.hide());
   }
 
   openModal(event : any ,template: TemplateRef<any>,eventoId : number) : void {
@@ -81,6 +99,11 @@ export class EventoListaComponent implements OnInit {
     this.eventoId = eventoId;
     this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
   }
+
+    public pageChanged(event : any): void {
+      this.pagination.currentPage = event.page;
+      this.getEventos();
+    }
 
   confirm(): void {
     this.modalRef.hide();

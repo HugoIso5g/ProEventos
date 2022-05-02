@@ -4,16 +4,16 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "sourceMap": true,
+    "forceConsistentCasingInFileNames": false,
+    "strict": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "sourceMap": false,
     "declaration": false,
-    "downlevelIteration": true,
+    "downlevelIteration": false,
     "experimentalDecorators": true,
     "moduleResolution": "node",
-    "importHelpers": true,
+    "importHelpers": false,
     "target": "es2017",
     "module": "es2020",
     "lib": [
@@ -27,8 +27,8 @@
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false
   }
 }

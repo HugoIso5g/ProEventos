@@ -1,14 +1,14 @@
 using System.Threading.Tasks;
 using ProEventos.Domain;
+using ProEventos.Persistence.Models;
 
 namespace ProEventos.Persistence.Contratos
 {
     public interface IEventoPersist
     {
         //EVENTOS
-         Task<Evento[]> GetAllEventosByTemaAsync(string tema,bool includePalestrantes = false);
-         Task<Evento[]> GetAllEventosAsync(bool includePalestrantes = false);
-         Task<Evento> GetAllEventosByIdAsync(int EventoId,bool includePalestrantes = false);
+         Task<PageList<Evento>> GetAllEventosAsync(int userId ,PageParams pageParams, bool includePalestrantes = false);
+         Task<Evento> GetAllEventosByIdAsync(int userId ,int EventoId,bool includePalestrantes = false);
   
     }
 }

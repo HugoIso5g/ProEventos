@@ -1,6 +1,10 @@
+import { environment } from '@environments/environment';
+import { UserUpdate } from './../../../models/Identity/UserUpdate';
+import { ToastrService } from 'ngx-toastr';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ValidatorField } from '@app/helpers/ValidatorField';
+import { AccountService } from '@app/services/account.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-perfil',
@@ -8,43 +12,59 @@ import { ValidatorField } from '@app/helpers/ValidatorField';
   styleUrls: ['./perfil.component.scss']
 })
 export class PerfilComponent implements OnInit {
+  public usuario = {} as UserUpdate;
+  public file: File;
+  public imagemURL = '';
 
-  form!: FormGroup;
 
-  get f(): any {
-    return this.form.controls;
+  public get ehPalestrante() : boolean {
+    return this.usuario.funcao === 'Palestrante';
   }
 
-  constructor(public fb: FormBuilder) { }
+  constructor(
+    private spinner : NgxSpinnerService,
+    private toaster : ToastrService,
+    private accountService : AccountService,
+    ) { }
 
-  ngOnInit() {
-    this.validation();
+  ngOnInit() {}
+
+  public getFormValue(usuario: UserUpdate) : void {
+    this.usuario = usuario;
+    if(this.usuario.imagemURL)
+      this.imagemURL = environment.apiUrl + `resources/perfil/${this.usuario.imagemURL}`;
+    else
+      this.imagemURL = './assets/img/perfil.png';
   }
 
-  private validation() : void
-  {
+  onFileChange(e : any) : void{
+    const reader = new FileReader();
 
-    const formOptions : AbstractControlOptions = {
-      validators: ValidatorField.MustMatch('senha','confirmeSenha')
-    };
+    reader.onload = (event : any ) => this.imagemURL = event.target.result;
 
-    this.form = this.fb.group({
-      titulo : ['',Validators.required],
-      primeiroNome : ['',Validators.required],
-      ultimoNome: ['',Validators.required] ,
-      email : ['',[Validators.required,Validators.email]],
-      telefone: ['',Validators.required] ,
-      funcao : ['',Validators.required] ,
-      descricao: ['',Validators.required] ,
-      senha : ['',[Validators.required,Validators.minLength(6)]] ,
-      confirmeSenha : ['',Validators.required]
-    },formOptions);
+    this.file = e.target.files;
 
+    reader.readAsDataURL(e.target.files[0]);
+
+    this.uploadImagem();
   }
 
-  public resetForm() : void
-  {
-    this.form.reset();
+  private uploadImagem(): void {
+
+    this.spinner.show();
+    this.accountService
+    .postUpload(this.file)
+    .subscribe(
+      () => this.toaster.success('Imagem atualizada com Sucesso', 'Sucesso!'),
+      (error : any) => {
+        this.toaster.error('Erro ao fazer upload de imagem' , 'Erro!');
+        console.log(error);
+      }
+    )
+    .add(
+      () => {this.spinner.hide()}
+    );
+
   }
 
 }

@@ -1,3 +1,7 @@
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { AccountService } from './../../../services/account.service';
+import { User } from './../../../models/Identity/User';
 import { ValidatorField } from './../../../helpers/ValidatorField';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControlOptions } from '@angular/forms';
@@ -9,13 +13,17 @@ import { FormGroup, FormBuilder, Validators, AbstractControlOptions } from '@ang
 })
 export class RegistrationComponent implements OnInit {
 
+  user = {} as User;
   form!: FormGroup;
 
   get f(): any {
     return this.form.controls;
   }
 
-  constructor(public fb: FormBuilder) {}
+  constructor(public fb: FormBuilder,
+    private accountService : AccountService,
+    private router : Router,
+    private toast : ToastrService) {}
 
   ngOnInit(): void {
     this.validation();
@@ -24,7 +32,7 @@ export class RegistrationComponent implements OnInit {
   private validation(): void {
 
     const formOptions : AbstractControlOptions = {
-      validators: ValidatorField.MustMatch('senha','confirmeSenha')
+      validators: ValidatorField.MustMatch('password','confirmePassword')
     };
 
     this.form = this.fb.group({
@@ -34,10 +42,18 @@ export class RegistrationComponent implements OnInit {
         [Validators.required,Validators.email]
       ],
       userName: ['', Validators.required],
-      senha: ['',
-        [Validators.required,Validators.minLength(6)]
+      password: ['',
+        [Validators.required,Validators.minLength(4)]
       ],
-      confirmeSenha: ['', Validators.required],
+      confirmePassword: ['', Validators.required],
     },formOptions);
+  }
+
+  register() : void {
+    this.user  = { ...this.form.value};
+    this.accountService.register(this.user).subscribe(
+      () => this.router.navigateByUrl('/dashboard'),
+      (error : any) => this.toast.error(error.error)
+    )
   }
 }

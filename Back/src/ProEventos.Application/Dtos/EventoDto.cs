@@ -18,7 +18,6 @@ namespace ProEventos.Application.Dtos
         [Display(Name ="Quantidade-Pessoa")]
         [Range(1,120000,ErrorMessage ="{0} não pode ser menor que 1 e maior que 1200000")]
         public int QtdPessoas { get; set; }
-       
         public string ImagemURL { get; set; }
         [Phone(ErrorMessage ="O campo {0} está com numero invalido")]
         [Required(ErrorMessage ="O campo {0} é obrigatório")]
@@ -28,6 +27,8 @@ namespace ProEventos.Application.Dtos
         [Display(Name ="e-mail")]
         [EmailAddress(ErrorMessage =" O campo {0} precisa ser um e-mail válido")]
         public string Email { get; set; }
+        public int UserId { get; set; }
+        public UserDto UserDto { get; set; }
         public IEnumerable<LoteDto> Lotes { get; set; }
         public IEnumerable<RedeSocialDto> RedesSociais { get; set; }
         public IEnumerable<PalestranteDto> PalestranteEventos {get; set;}

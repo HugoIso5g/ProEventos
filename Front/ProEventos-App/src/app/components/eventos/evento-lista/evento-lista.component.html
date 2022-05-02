@@ -1,31 +1,24 @@
 <div class="card rounded shadow-sm p-3">
   <div class="d-flex" >
-
     <div class="flex-fill pr-3">
       <div class="input-group mb-2">
-
         <div class="input-group-prepend">
           <div class="input-group-text">Filtro</div>
         </div>
-
         <input
-            [(ngModel)]="filtroLista"
+           (input)="filtrarEventos($event.target)"
             type="text"
             class="form-control mr-2"
             placeholder="Filtrar por Tema e Local"
         />
-
       </div>
     </div>
-
     <div>
       <a class="d-flex btn btn-outline-primary" routerLink="/eventos/detalhe">
         <i class="fa fa-plus-circle my-1"></i>
         <b class="ml-1 d-none d-sm-block">Novo</b>
       </a>
     </div>
-
-
   </div>
 <br />
 
@@ -52,7 +45,7 @@
   </tr>
 </thead>
 <tbody *ngIf="eventos && eventos.length">
-  <tr *ngFor="let evento of eventosFiltrados" style="cursor:pointer;" (click)="detalheEvento(evento.id)">
+  <tr *ngFor="let evento of eventos" style="cursor:pointer;" (click)="detalheEvento(evento.id)">
     <td class="d-none d-md-table-cell">
       <img [collapse]="!mostrarImagem"
       [isAnimated]="true"
@@ -84,6 +77,25 @@
   </tr>
 </tfoot>
 </table>
+<div class="d-flex justify-content-center">
+  <pagination
+  [boundaryLinks]="true"
+
+  [totalItems]="pagination.totalItems"
+  (pageChanged)="pageChanged($event)"
+  [itemsPerPage]="pagination.itemsPerPage"
+  [(ngModel)]="pagination.currentPage"
+
+  pageBtnClass="btn"
+  previousText="&lsaquo;"
+  nextText="&rsaquo;"
+  firstText="&laquo;"
+  lastText="&raquo;">
+
+</pagination>
+</div>
+
+
 </div>
 <ng-template #template>
 <div class="modal-body text-center">
